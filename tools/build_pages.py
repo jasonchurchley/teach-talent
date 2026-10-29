@@ -461,13 +461,14 @@ def cta_band(title, text):
                                                                           btn(FIND[0], FIND[1], "line-light"))
 
 
-def page_hero(eyebrow, title, lede, trail, img=None, alt=""):
+def page_hero(eyebrow, title, lede, trail, img=None, alt="", ctas=True):
+    cta = '<div class="cta-row">%s%s</div>' % (btn(HIRE[0], HIRE[1], "solid"), btn(FIND[0], FIND[1], "line")) if ctas else ""
     pic = ""
     if img:
         pic = '<figure class="phero__img reveal"><img src="/images/%s.webp" alt="%s" width="1000" height="1200" fetchpriority="high"></figure>' % (img, esc(alt))
     return ('<section class="phero%s"><div class="wrap phero__in"><div class="phero__txt">%s<p class="eyebrow">%s</p>'
-            '<h1 class="h1">%s</h1><p class="lede">%s</p></div>%s</div></section>') % (
-        " phero--img" if img else "", crumbs(trail), eyebrow, title, lede, pic)
+            '<h1 class="h1">%s</h1><p class="lede">%s</p>%s</div>%s</div></section>') % (
+        " phero--img" if img else "", crumbs(trail), eyebrow, title, lede, cta, pic)
 
 
 def field(name, label, kind="text", req=True, auto="", opts=None, full=False, hint=""):
@@ -805,7 +806,7 @@ def build_guides():
     for g in GUIDES:
         gt = trail + [(g["title"], "/guides/%s/" % g["slug"])]
         prose = "".join("<%s>%s</%s>" % (t, esc(x), t) for t, x in g["body"])
-        body = page_hero("Guide", g["title"], g["desc"], gt, g["img"], g["alt"]) + \
+        body = page_hero("Guide", g["title"], g["desc"], gt, g["img"], g["alt"], ctas=False) + \
             '<section class="section prose-sec"><article class="wrap prose">%s<div class="cta-row">%s%s</div></article></section>' % (
                 prose, btn(FIND[0], FIND[1], "solid"), btn(HIRE[0], HIRE[1], "line"))
         art = {"@context": "https://schema.org", "@type": "Article", "headline": g["title"], "description": g["desc"],
@@ -837,7 +838,7 @@ def build_contact():
 
 def build_misc():
     page("/privacy/", "Privacy Notice", "How Teach Talent collects, uses and protects personal data from schools and candidates.",
-         page_hero("Legal", "Privacy notice", "Placeholder: the client's full UK GDPR privacy notice goes here before launch.", [("Home", "/"), ("Privacy", "/privacy/")]) +
+         page_hero("Legal", "Privacy notice", "Placeholder: the client's full UK GDPR privacy notice goes here before launch.", [("Home", "/"), ("Privacy", "/privacy/")], ctas=False) +
          '<section class="section prose-sec"><div class="wrap prose"><h2>Who we are</h2><p>Teach Talent Ltd is the data controller for information you send us through this website.</p>'
          '<h2>What we collect</h2><p>Contact details, CV information and the details you provide in our forms, used only to respond to you and to find suitable roles or candidates.</p>'
          '<h2>Your rights</h2><p>You can ask to see, correct or delete your data at any time by emailing <a href="mailto:%s">%s</a>.</p></div></section>' % (EMAIL, EMAIL))

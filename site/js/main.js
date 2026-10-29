@@ -56,9 +56,14 @@
   var card = document.querySelector('.float-card');
   var foot = document.querySelector('.site-foot');
   if (card && 'IntersectionObserver' in window) {
-    var past = false, atFoot = false;
+    var past = false, atFoot = false, forms = 0;
     var top = document.querySelector('.hero, .phero');
-    function upd() { card.classList.toggle('is-on', past && !atFoot); }
+    function upd() { card.classList.toggle('is-on', past && !atFoot && !forms); }
+    var fio = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { forms += e.isIntersecting ? 1 : (e.target._seen ? -1 : 0); e.target._seen = e.isIntersecting; });
+      forms = Math.max(0, forms); upd();
+    });
+    document.querySelectorAll('.request, .cta-band').forEach(function (el) { fio.observe(el); });
     if (top) new IntersectionObserver(function (e) { past = !e[0].isIntersecting; upd(); }).observe(top);
     new IntersectionObserver(function (e) { atFoot = e[0].isIntersecting; upd(); }).observe(foot);
   }
