@@ -2,7 +2,7 @@
 # TODO at go-live: set repo + DecapBridge auth (see README "Jobs admin").
 backend:
   name: github
-  repo: OWNER/teach-talent
+  repo: jasonchurchley/teach-talent
   branch: main
 local_backend: true          # only used when `npx decap-server` is running locally
 
