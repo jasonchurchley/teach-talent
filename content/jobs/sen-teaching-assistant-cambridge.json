@@ -1,0 +1,17 @@
+{
+  "title": "SEN Teaching Assistant",
+  "town": "Cambridge",
+  "county": "Cambridgeshire",
+  "type": "Long term",
+  "employment": "FULL_TIME",
+  "pay": "£95 to £105 per day",
+  "pay_min": 95,
+  "pay_max": 105,
+  "pay_unit": "DAY",
+  "start": "January 2027",
+  "posted": "2026-10-30",
+  "closes": "2026-12-01",
+  "summary": "Support a Year 4 pupil with autism on a 1:1 basis at a friendly primary school in north Cambridge.",
+  "details": [{"point": "Monday to Friday, 8:30am to 3:30pm"}, {"point": "Experience with autism or SEMH preferred"}, {"point": "Enhanced DBS required (we can help)"}],
+  "draft": false
+}

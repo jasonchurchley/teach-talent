@@ -1,0 +1,8 @@
+# Netlify builds the site from the repo, so publishing a job in /admin/ redeploys it.
+# On the preview site set the env var TT_PREVIEW=1 so every page is noindex.
+[build]
+  command = "bash tools/netlify_build.sh"
+  publish = "site"
+
+[build.environment]
+  PYTHON_VERSION = "3.11"

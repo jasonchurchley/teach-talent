@@ -6,6 +6,7 @@ header, menu and footer. Run: python3 tools/build_pages.py
 import json
 import os
 import re
+import shutil
 import sys
 from datetime import date
 
@@ -153,14 +154,31 @@ COUNTIES = [
     },
 ]
 
-# Jobs board. Add dicts here and rebuild; JobPosting schema is generated for each.
-# Example:
-# {"slug": "sen-ta-cambridge", "title": "SEN Teaching Assistant", "town": "Cambridge",
-#  "county": "Cambridgeshire", "type": "Long term", "employment": "FULL_TIME",
-#  "pay": "£95 to £105 per day", "pay_min": 95, "pay_max": 105, "pay_unit": "DAY",
-#  "start": "January 2027", "posted": "2026-11-01", "closes": "2026-12-01",
-#  "summary": "...", "details": ["...", "..."]}
-JOBS = []
+# Jobs board. Each job is one JSON file in content/jobs/ (edited through /admin/, Decap CMS);
+# the filename is the slug. Jobs past their closing date drop off automatically.
+# JobPosting schema is generated for each.
+CONTENT_DIR = os.path.join(ROOT, "..", "content")
+
+
+def load_jobs():
+    jobs, d = [], os.path.join(CONTENT_DIR, "jobs")
+    for fn in sorted(os.listdir(d)) if os.path.isdir(d) else []:
+        if not fn.endswith(".json"):
+            continue
+        with open(os.path.join(d, fn)) as f:
+            j = json.load(f)
+        if j.get("draft") or str(j.get("closes", "9999"))[:10] < TODAY:
+            continue
+        j["slug"] = fn[:-5]
+        j["posted"], j["closes"] = str(j["posted"])[:10], str(j["closes"])[:10]
+        j["details"] = [x["point"] if isinstance(x, dict) else x for x in j.get("details", [])]
+        jobs.append(j)
+    return sorted(jobs, key=lambda j: j["posted"], reverse=True)
+
+
+JOBS = load_jobs()
+with open(os.path.join(CONTENT_DIR, "jobs-page.json")) as f:
+    JOBS_PAGE = json.load(f)
 
 GUIDES = [
     {
@@ -654,7 +672,7 @@ def build_candidates():
 
 def job_ld(j):
     return {"@context": "https://schema.org", "@type": "JobPosting", "title": j["title"], "description": "<p>%s</p><ul>%s</ul>" % (
-        j["summary"], "".join("<li>%s</li>" % d for d in j["details"])), "datePosted": j["posted"], "validThrough": j["closes"],
+        esc(j["summary"]), "".join("<li>%s</li>" % esc(d) for d in j["details"])), "datePosted": j["posted"], "validThrough": j["closes"],
         "employmentType": j["employment"], "hiringOrganization": {"@type": "Organization", "name": NAME, "sameAs": SITE},
         "jobLocation": {"@type": "Place", "address": {"@type": "PostalAddress", "addressLocality": j["town"],
                                                        "addressRegion": j["county"], "addressCountry": "GB"}},
@@ -664,16 +682,19 @@ def job_ld(j):
 
 def build_jobs():
     trail = [("Home", "/"), ("Jobs", "/jobs/")]
+    jobs_dir, live = os.path.join(SITE_DIR, "jobs"), {j["slug"] for j in JOBS}
+    for d in os.listdir(jobs_dir) if os.path.isdir(jobs_dir) else []:   # pages for removed or closed jobs
+        if os.path.isdir(os.path.join(jobs_dir, d)) and d not in live:
+            shutil.rmtree(os.path.join(jobs_dir, d))
     if JOBS:
         cards = "".join(
             '<li class="job reveal"><a href="/jobs/%s/"><h2>%s</h2><p class="job__meta"><span>%s, %s</span><span>%s</span><span>%s</span></p>'
-            '<p>%s</p>%s</a></li>' % (j["slug"], esc(j["title"]), j["town"], j["county"], j["type"], j["pay"], esc(j["summary"]),
+            '<p>%s</p>%s</a></li>' % (j["slug"], esc(j["title"]), esc(j["town"]), j["county"], j["type"], esc(j["pay"]), esc(j["summary"]),
                                        icon("arrow-up-right", "ic arr")) for j in JOBS)
         listing = '<ul class="jobs__list">%s</ul>' % cards
     else:
         listing = (
-            '<div class="jobs__empty reveal"><p class="display">New roles are on their way.</p>'
-            '<p>We are adding live teaching assistant and SEN vacancies across the East of England. Register now and we will contact you about roles before they are posted here.</p>'
+            '<div class="jobs__empty reveal"><p class="display">%s</p><p>%s</p>' % (esc(JOBS_PAGE["empty_title"]), esc(JOBS_PAGE["empty_text"])) +
             '<div class="cta-row">' + btn(FIND[0], FIND[1], "solid") + '</div></div>')
     filt = (
         '<div class="jobs__filter reveal" aria-label="Browse by area and role"><div><p class="eyebrow">By area</p><ul class="chips">' +
@@ -690,8 +711,7 @@ def build_jobs():
             field("county", "County", "select", opts=COUNTY_NAMES),
         ], "Get job alerts") + '</div></section>'
     )
-    body = page_hero("Jobs", "Teaching assistant and SEN jobs in the East of England",
-                     "Live vacancies for teaching assistants, SEN TAs, HLTAs and 1:1 support staff across Cambridgeshire, Norfolk, Suffolk, Essex, Hertfordshire and Bedfordshire.", trail) + \
+    body = page_hero("Jobs", esc(JOBS_PAGE["heading"]), esc(JOBS_PAGE["intro"]), trail) + \
         '<section class="section jobs"><div class="wrap">' + listing + filt + '</div></section>' + alert
     page("/jobs/", "Teaching Assistant & SEN Jobs | East of England Vacancies",
          "Browse teaching assistant, SEN TA, HLTA and 1:1 support jobs in schools across the East of England, or set up job alerts for new vacancies near you.",
@@ -700,7 +720,7 @@ def build_jobs():
         jt = trail + [(j["title"], "/jobs/%s/" % j["slug"])]
         jb = page_hero("%s, %s" % (j["town"], j["county"]), esc(j["title"]), esc(j["summary"]), jt) + \
             '<section class="section prose-sec"><div class="wrap prose"><p><strong>Contract:</strong> %s<br><strong>Pay:</strong> %s<br><strong>Start:</strong> %s</p><ul>%s</ul>%s</div></section>' % (
-                j["type"], j["pay"], j["start"], "".join("<li>%s</li>" % esc(d) for d in j["details"]), btn("Apply for this role", FIND[1], "solid"))
+                j["type"], esc(j["pay"]), esc(j["start"]), "".join("<li>%s</li>" % esc(d) for d in j["details"]), btn("Apply for this role", FIND[1], "solid"))
         page("/jobs/%s/" % j["slug"], "%s in %s" % (j["title"], j["town"]), j["summary"][:155], jb, [job_ld(j), crumbs_ld(jt)])
 
 
