@@ -1,0 +1,16 @@
+{
+  "draft": false,
+  "start": "ASAP",
+  "summary": "Test job added through the admin panel. Will be deleted.",
+  "pay": "£90 to £95 per day",
+  "county": "Suffolk",
+  "employment": "FULL_TIME",
+  "pay_max": 95,
+  "town": "Ipswich",
+  "title": "TEST Teaching Assistant",
+  "type": "Day to day",
+  "closes": "2026-11-30",
+  "pay_min": 90,
+  "pay_unit": "DAY",
+  "posted": "2026-10-30"
+}
