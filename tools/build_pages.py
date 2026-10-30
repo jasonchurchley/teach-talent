@@ -362,6 +362,7 @@ def header(path):
         '<header class="site-head"><div class="wrap site-head__in">' + logo() +
         '<nav class="nav" aria-label="Main"><ul>' + nav + '</ul></nav>'
         '<div class="site-head__cta">' + btn(HIRE[0], HIRE[1], "ghost") + btn(FIND[0], FIND[1], "solid") + '</div>'
+        '<a class="staff-link" href="/admin/" rel="nofollow" aria-label="Staff login" title="Staff login">' + icon("user-circle") + '</a>'
         '<button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Open menu">'
         '<span></span><span></span></button></div></header>'
         '<div class="menu" id="menu" hidden><div class="menu__in wrap">'

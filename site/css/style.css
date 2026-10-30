@@ -79,13 +79,17 @@ h1,h2,h3,p,li,dd,blockquote,summary span,.crumbs,.t,.d,.towns li{overflow-wrap:a
 .site-head__cta{display:flex;gap:8px}
 .site-head__cta .btn{min-height:44px;padding:10px 16px;font-size:.875rem}
 .site-head__cta .btn .ic{display:none}
-.burger{display:none;margin-left:auto;width:48px;height:48px;border:1px solid var(--line);border-radius:999px;background:transparent;cursor:pointer;position:relative}
+.staff-link{flex:none;display:grid;place-items:center;width:44px;height:44px;border:1px solid var(--line);border-radius:999px;color:var(--navy);transition:border-color .2s var(--ease),background-color .2s var(--ease)}
+.staff-link .ic{width:22px;height:22px}
+@media (hover:hover){.staff-link:hover{border-color:var(--navy);background:var(--paper)}}
+.staff-link:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+.burger{display:none;flex:none;margin-left:auto;width:48px;height:48px;border:1px solid var(--line);border-radius:999px;background:transparent;cursor:pointer;position:relative}
 .burger span{position:absolute;left:14px;right:14px;height:1.5px;background:var(--navy);transition:transform .3s var(--ease)}
 .burger span:first-child{top:19px}.burger span:last-child{top:27px}
 .burger[aria-expanded="true"] span:first-child{transform:translateY(4px) rotate(45deg)}
 .burger[aria-expanded="true"] span:last-child{transform:translateY(-4px) rotate(-45deg)}
-@media (max-width:1240px){.nav{display:none}.burger{display:block}.site-head__cta{margin-left:auto}}
-@media (max-width:760px){.site-head__cta{display:none}:root{--head:68px}.logo__name{font-size:1.35rem}}
+@media (max-width:1240px){.nav{display:none}.burger{display:block;margin-left:0}.site-head__cta{margin-left:auto}}
+@media (max-width:760px){.site-head__cta{display:none}.staff-link{margin-left:auto}.site-head__in{gap:10px}:root{--head:68px}.logo__name{font-size:1.35rem}}
 
 .menu{position:fixed;inset:var(--head) 0 0;z-index:39;background:var(--cream);overflow-y:auto;opacity:0;transform:translateY(-8px);transition:opacity .3s var(--ease),transform .3s var(--ease)}
 .menu.is-open{opacity:1;transform:none}
