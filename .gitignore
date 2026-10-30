@@ -1,3 +1,11 @@
 .DS_Store
 preview-build/
 .netlify/
+
+# Internal notes: kept locally, not in the (public) repo
+BRIEF.md
+DESIGN.md
+DIRECTION.md
+PRODUCT.md
+reports/
+plans/
