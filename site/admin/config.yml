@@ -1,12 +1,28 @@
 # Jobs admin (Decap CMS). Saves JSON into content/ in the GitHub repo; Netlify rebuilds the site on each publish.
-# TODO at go-live: set repo + DecapBridge auth (see README "Jobs admin").
+# Login via DecapBridge (site 97ad375b..., Jason's account). At launch update the CMS URL there + site_url here.
 backend:
-  name: github
+  name: git-gateway
   repo: jasonchurchley/teach-talent
   branch: main
+  auth_type: pkce
+  base_url: https://auth.decapbridge.com
+  auth_endpoint: /sites/97ad375b-6329-44bc-8c43-f9a0a9d42904/pkce
+  auth_token_endpoint: /sites/97ad375b-6329-44bc-8c43-f9a0a9d42904/token
+  gateway_url: https://gateway.decapbridge.com
+  commit_messages:
+    create: Create {{collection}} "{{slug}}" - {{author-name}} via admin
+    update: Update {{collection}} "{{slug}}" - {{author-name}} via admin
+    delete: Delete {{collection}} "{{slug}}" - {{author-name}} via admin
+    uploadMedia: Upload "{{path}}" - {{author-name}} via admin
+    deleteMedia: Delete "{{path}}" - {{author-name}} via admin
+auth:
+  email_claim: email
+  first_name_claim: first_name
+  last_name_claim: last_name
+  avatar_url_claim: avatar_url
 local_backend: true          # only used when `npx decap-server` is running locally
 
-site_url: https://www.teachtalent.co.uk
+site_url: https://teachtalent-preview-jcandco.netlify.app
 logo_url: /images/mark.png
 media_folder: site/images/uploads
 public_folder: /images/uploads
